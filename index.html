@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sistema Pullback</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #111;
+  color: white;
+  padding: 30px;
+}
+button {
+  padding: 15px 30px;
+  font-size: 18px;
+  background: #00c853;
+  border: none;
+  border-radius: 8px;
+  color: white;
+}
+.card {
+  margin-top: 30px;
+  padding: 20px;
+  background: #222;
+  border-radius: 10px;
+}
+</style>
+</head>
+<body>
+
+<h2>Sistema Pullback Long</h2>
+
+<button onclick="analisar()">Analisar</button>
+
+<div id="resultado"></div>
+
+<script>
+function analisar() {
+  const pares = ["BTC/USDT", "ETH/USDT", "SOL/USDT", "LINK/USDT", "DOGE/USDT"];
+  const par = pares[Math.floor(Math.random()*pares.length)];
+  const entrada = (Math.random()*0.01+0.18).toFixed(4);
+  const alvo = (entrada*1.02).toFixed(4);
+  const score = (Math.random()*20+75).toFixed(1);
+
+  document.getElementById("resultado").innerHTML =
+    `<div class="card">
+      <h3>${par}</h3>
+      <p>Entrada: ${entrada}</p>
+      <p>Alvo: ${alvo}</p>
+      <p>Alavancagem sugerida: 3x</p>
+      <p>Score: ${score}%</p>
+    </div>`;
+}
+</script>
+
+</body>
+</html>
