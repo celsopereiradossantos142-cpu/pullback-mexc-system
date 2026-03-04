@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Sistema Pullback</title>
+<title>Sistema Pullback Long</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
@@ -31,27 +31,57 @@ button {
 <body>
 
 <h2>Sistema Pullback Long</h2>
-
 <button onclick="analisar()">Analisar</button>
-
 <div id="resultado"></div>
 
 <script>
-function analisar() {
-  const pares = ["BTC/USDT", "ETH/USDT", "SOL/USDT", "LINK/USDT", "DOGE/USDT"];
-  const par = pares[Math.floor(Math.random()*pares.length)];
-  const entrada = (Math.random()*0.01+0.18).toFixed(4);
-  const alvo = (entrada*1.02).toFixed(4);
-  const score = (Math.random()*20+75).toFixed(1);
+async function analisar() {
+  document.getElementById("resultado").innerHTML = "Analisando...";
 
-  document.getElementById("resultado").innerHTML =
-    `<div class="card">
-      <h3>${par}</h3>
-      <p>Entrada: ${entrada}</p>
-      <p>Alvo: ${alvo}</p>
-      <p>Alavancagem sugerida: 3x</p>
-      <p>Score: ${score}%</p>
-    </div>`;
+  try {
+    const response = await fetch("https://contract.mexc.com/api/v1/contract/ticker");
+    const data = await response.json();
+
+    let oportunidades = [];
+
+    data.data.forEach(item => {
+      if(item.symbol.endsWith("USDT")) {
+
+        let variacao = item.riseFallRate * 100;
+        let preco = parseFloat(item.lastPrice);
+
+        // Filtro simples de pullback leve
+        if(variacao > 0.5 && variacao < 3) {
+          oportunidades.push({
+            par: item.symbol,
+            entrada: (preco * 0.995).toFixed(4),
+            alvo: (preco * 1.01).toFixed(4),
+            score: (80 + variacao).toFixed(1)
+          });
+        }
+      }
+    });
+
+    if(oportunidades.length > 0) {
+      let op = oportunidades[0];
+
+      document.getElementById("resultado").innerHTML =
+        `<div class="card">
+          <h3>${op.par}</h3>
+          <p>Entrada: ${op.entrada}</p>
+          <p>Alvo: ${op.alvo}</p>
+          <p>Alavancagem sugerida: 3x</p>
+          <p>Score: ${op.score}%</p>
+        </div>`;
+    } else {
+      document.getElementById("resultado").innerHTML =
+        "<div class='card'>Nenhuma oportunidade encontrada agora.</div>";
+    }
+
+  } catch(error) {
+    document.getElementById("resultado").innerHTML =
+      "<div class='card'>Erro ao conectar com a MEXC.</div>";
+  }
 }
 </script>
 
